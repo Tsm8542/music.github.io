@@ -28,23 +28,22 @@ let track_list = [
     path:"ishqwalalove.mp3",
     },
 ];
-function random_bg_color(){
-    let red = Math.floor(Math.random() * 256) + 64;
-    let green = Math.floor(Math.random() * 256) + 64;
-    let blue = Math.floor(Math.random() * 256) + 64;
-    let bgColor = "rgb(" + red + "," + green + "," + blue + ")";
-    document.body.style.background = bgColor;
-}
-function loadTrack(track_index) {
-    clearInterval(updateTimer);
-    resetValues();
-    curr_track.src = track_list[track_index].path;
-    curr_track.load();
-    track_art.style.backgroundImage = "url(" + track_list[track_index].image + ")";
-    track_name.textContent = track_list[track_index].name;
-    updateTimer = setInterval(seekUpdate, 1000);
-    curr_track.addEventListener("ended", nextTrack);
-    random_bg_color();
+function seekUpdate() {
+    let seekPosition = 0;
+    if (!isNaN(curr_track.duration)) {
+        seekPosition = curr_track.currentTime * (100 / curr_track.duration);
+        seek_slider.value = seekPosition;
+        let currentMinutes = Math.floor(curr_track.currentTime / 60);
+        let currentSeconds = Math.floor(curr_track.currentTime - currentMinutes * 60);
+        let durationMinutes = Math.floor(curr_track.duration / 60);
+        let durationSeconds = Math.floor(curr_track.duration - durationMinutes * 60);
+        if (currentSeconds < 10) { currentSeconds = "0" + currentSeconds; }
+        if (durationSeconds < 10) { durationSeconds = "0" + durationSeconds; }
+        if (currentMinutes < 10) { currentMinutes = "0" + currentMinutes; }
+        if (durationMinutes < 10) { durationMinutes = "0" + durationMinutes; }
+        curr_time.textContent = currentMinutes + ":" + currentSeconds;
+        total_duration.textContent = durationMinutes + ":" + durationSeconds;
+  }
 }
 function resetValues() {
     curr_time.textContent = "00:00";
@@ -60,6 +59,10 @@ function playTrack() {
     curr_track.play();
     isPlaying = true;
     playpause_btn.innerHTML = '<i class="fa fa-pause-circle fa-5x"></i>';
+}
+function seekTo() {
+  let seekto = curr_track.duration * (seek_slider.value / 100);
+  curr_track.currentTime = seekto;
 }
 function pauseTrack() {
     curr_track.pause();
@@ -80,27 +83,24 @@ function prevTrack() {
     loadTrack(track_index);
     playTrack();
 }
-function seekTo() {
-  let seekto = curr_track.duration * (seek_slider.value / 100);
-  curr_track.currentTime = seekto;
+function loadTrack(track_index) {
+    clearInterval(updateTimer);
+    resetValues();
+    curr_track.src = track_list[track_index].path;
+    curr_track.load();
+    track_art.style.backgroundImage = "url(" + track_list[track_index].image + ")";
+    track_name.textContent = track_list[track_index].name;
+    updateTimer = setInterval(seekUpdate, 1000);
+    curr_track.addEventListener("ended", nextTrack);
+    random_bg_color();
 }
 function setVolume() {
   curr_track.volume = volume_slider.value / 100;
 }
-function seekUpdate() {
-    let seekPosition = 0;
-    if (!isNaN(curr_track.duration)) {
-        seekPosition = curr_track.currentTime * (100 / curr_track.duration);
-        seek_slider.value = seekPosition;
-        let currentMinutes = Math.floor(curr_track.currentTime / 60);
-        let currentSeconds = Math.floor(curr_track.currentTime - currentMinutes * 60);
-        let durationMinutes = Math.floor(curr_track.duration / 60);
-        let durationSeconds = Math.floor(curr_track.duration - durationMinutes * 60);
-        if (currentSeconds < 10) { currentSeconds = "0" + currentSeconds; }
-        if (durationSeconds < 10) { durationSeconds = "0" + durationSeconds; }
-        if (currentMinutes < 10) { currentMinutes = "0" + currentMinutes; }
-        if (durationMinutes < 10) { durationMinutes = "0" + durationMinutes; }
-        curr_time.textContent = currentMinutes + ":" + currentSeconds;
-        total_duration.textContent = durationMinutes + ":" + durationSeconds;
-  }
+function random_bg_color(){
+    let red = Math.floor(Math.random() * 256) + 64;
+    let green = Math.floor(Math.random() * 256) + 64;
+    let blue = Math.floor(Math.random() * 256) + 64;
+    let bgColor = "rgb(" + red + "," + green + "," + blue + ")";
+    document.body.style.background = bgColor;
 }
